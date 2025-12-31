@@ -1,3 +1,136 @@
+# from django.shortcuts import render, redirect
+# from django.contrib.auth import authenticate, login, logout
+# from django.contrib.auth.decorators import login_required
+# from django.contrib.auth.models import User
+# from .forms import RegisterForm
+# from django.core.exceptions import PermissionDenied
+# from django.views.decorators.cache import never_cache
+# from django.views import View
+# from .models import Student
+# from django.utils.decorators import method_decorator
+
+
+# def home_view(request):
+#     return render(request, 'accounts/index.html')
+
+
+# def register_view(request):
+#     if request.method == "POST":
+#         form = RegisterForm(request.POST)
+#         if form.is_valid():
+#             user = User.objects.create_user(
+#                 username=form.cleaned_data['username'],
+#                 password=form.cleaned_data['password']
+#             )
+#             login(request, user)
+#             return redirect('login')
+#     else:
+#         form = RegisterForm()
+
+#     return render(request, 'accounts/register.html', {'form': form})
+
+
+# @never_cache
+# def login_view(request):
+#     error = None
+
+#     if request.method == "POST":
+#         username = request.POST.get('username')
+#         password = request.POST.get('password')
+
+#         user = authenticate(request, username=username, password=password)
+
+#         if user:
+#             login(request, user)
+
+#             # ROLE-BASED REDIRECT
+#             if user.is_staff:
+#                 return redirect('admin_dashboard')
+
+#             if user.groups.filter(name='Teacher').exists():
+#                 return redirect('teacher_dashboard')
+
+#             return redirect('student_dashboard')
+
+#         error = "Invalid credentials"
+
+#     return render(request, 'accounts/login.html', {'error': error})
+
+
+# @login_required
+# def logout_view(request):
+#     logout(request)
+#     return redirect('login')
+
+
+# @login_required
+# def student_profile(request):
+#     # Fetch the logged-in student's profile
+#     student = Student.objects.filter(user=request.user).first()
+#     return render(request, 'student/profile.html', {'student': student})
+
+
+# @login_required
+# def student_courses(request):
+#     return render(request, 'student/my_courses.html')
+
+
+# @login_required
+# def admin_dashboard(request):
+#     return render(request, 'hero/dashboard.html')
+
+
+# @login_required
+# def teacher_dashboard(request):
+#     # Ensure only teacher can access
+#     if not request.user.groups.filter(name='Teacher').exists():
+#         raise PermissionDenied
+#     return render(request, 'teacher/dashboard.html')
+
+
+# @method_decorator(login_required, name='dispatch')
+# class Create(View):
+#     """View for creating students and listing them"""
+
+#     def get(self, request):
+#         students = Student.objects.all()
+#         return render(request, 'student/dashboard.html', {'students': students})
+
+#     def post(self, request):
+#         name = request.POST.get('name')
+#         age = request.POST.get('age')
+#         email = request.POST.get('email')
+#         grade = request.POST.get('grade')
+#         address = request.POST.get('address')
+
+#         # Validate required fields
+#         if not all([name, age, email, grade, address]):
+#             return render(request, 'student/dashboard.html', {
+#                 'error': 'All fields are required',
+#                 'students': Student.objects.all()
+#             })
+
+#         # Validate unique email
+#         if Student.objects.filter(email=email).exists():
+#             return render(request, 'student/dashboard.html', {
+#                 'error': 'Email already exists',
+#                 'students': Student.objects.all()
+#             })
+
+#         # Create student and link to logged-in user
+#         Student.objects.create(
+#             user=request.user,
+#             name=name,
+#             age=int(age),
+#             email=email,
+#             grade=int(grade),
+#             address=address
+#         )
+
+#         return redirect('student_dashboard')
+
+
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -5,16 +138,15 @@ from django.contrib.auth.models import User
 from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.cache import never_cache
-# for the csrf error while logging in due to not refreshing the page
 from django.views import View
 from .models import Student
 from django.utils.decorators import method_decorator
 
-
+# ------------------ HOME ------------------
 def home_view(request):
     return render(request, 'accounts/index.html')
 
-
+# ------------------ REGISTER ------------------
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -23,107 +155,98 @@ def register_view(request):
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password']
             )
+            # Auto-create linked Student profile
+            Student.objects.create(user=user)
+
             login(request, user)
-            return redirect('login')
+            return redirect('student_dashboard')
     else:
         form = RegisterForm()
-
     return render(request, 'accounts/register.html', {'form': form})
 
+# ------------------ LOGIN ------------------
 @never_cache
 def login_view(request):
     error = None
-
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('password')
-
         user = authenticate(request, username=username, password=password)
-
         if user:
             login(request, user)
-
-            # ROLE-BASED REDIRECT (safe defaults)
-            
+            # Role-based redirect
             if user.is_staff:
                 return redirect('admin_dashboard')
-            
             if user.groups.filter(name='Teacher').exists():
-                return redirect('teacher_dashboard') 
-            
+                return redirect('teacher_dashboard')
             return redirect('student_dashboard')
-
         error = "Invalid credentials"
-
     return render(request, 'accounts/login.html', {'error': error})
 
-
+# ------------------ LOGOUT ------------------
 @login_required
 def logout_view(request):
     logout(request)
     return redirect('login')
 
-
-# @login_required
-# def student_dashboard(request):
-#     return render(request, 'student/dashboard.html')
-
+# ------------------ STUDENT PROFILE ------------------
 @login_required
 def student_profile(request):
-    return render(request, 'student/profile.html')
+    student, created = Student.objects.get_or_create(user=request.user)
+    return render(request, 'student/profile.html', {'student': student})
 
+# ------------------ STUDENT COURSES ------------------
 @login_required
 def student_courses(request):
     return render(request, 'student/my_courses.html')
 
-
-
+# ------------------ ADMIN DASHBOARD ------------------
 @login_required
 def admin_dashboard(request):
     return render(request, 'hero/dashboard.html')
 
+# ------------------ TEACHER DASHBOARD ------------------
 @login_required
 def teacher_dashboard(request):
-    print("TEACHER DASHBOARD HIT")
-    print("User:", request.user.username)
-    print("Groups:", request.user.groups.all())
-
     if not request.user.groups.filter(name='Teacher').exists():
         raise PermissionDenied
-
     return render(request, 'teacher/dashboard.html')
 
-
+# ------------------ STUDENT DASHBOARD (CRUD) ------------------
 @method_decorator(login_required, name='dispatch')
 class Create(View):
-
     def get(self, request):
-        students = Student.objects.all()
-        return render(request, 'student/dashboard.html', {'students': students})
+        student, created = Student.objects.get_or_create(user=request.user)
+        return render(request, 'student/dashboard.html', {'student': student})
 
     def post(self, request):
+        student, created = Student.objects.get_or_create(user=request.user)
         name = request.POST.get('name')
         age = request.POST.get('age')
         email = request.POST.get('email')
         grade = request.POST.get('grade')
         address = request.POST.get('address')
 
+        # Validate required fields
         if not all([name, age, email, grade, address]):
             return render(request, 'student/dashboard.html', {
-                'error': 'All fields are required'
+                'error': 'All fields are required',
+                'student': student
             })
 
-        if Student.objects.filter(email=email).exists():
+        # Validate unique email
+        if Student.objects.exclude(user=request.user).filter(email=email).exists():
             return render(request, 'student/dashboard.html', {
-                'error': 'Email already exists'
+                'error': 'Email already exists',
+                'student': student
             })
 
-        Student.objects.create(
-            name=name,
-            age=int(age),
-            email=email,
-            grade=int(grade),
-            address=address
-        )
+        # Update student profile
+        student.name = name
+        student.age = int(age)
+        student.email = email
+        student.grade = int(grade)
+        student.address = address
+        student.save()
 
-        return redirect('student_dashboard')
+        return redirect('student_profile')

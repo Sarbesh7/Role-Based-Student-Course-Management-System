@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static %} 
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,11 +8,17 @@
 </head>
 <body>
     <h1>My Profile</h1>
-    <p>Name: {{ user.first_name }} {{ user.last_name }}</p>
-    <p>Email: {{ user.email }}</p>
-    <a href="{% url 'student_dashboard' %}">Back to Dashboard</a>
 
-    
-    
+    {% if student %}
+        <p>Name: {{ student.name }}</p>
+        <p>Email: {{ student.email }}</p>
+        <p>Age: {{ student.age }}</p>
+        <p>Grade: {{ student.grade }}</p>
+        <p>Address: {{ student.address }}</p>
+    {% else %}
+        <p>No profile data found. Please complete your dashboard form.</p>
+    {% endif %}
+
+    <a href="{% url 'student_dashboard' %}">Back to Dashboard</a>
 </body>
 </html>
