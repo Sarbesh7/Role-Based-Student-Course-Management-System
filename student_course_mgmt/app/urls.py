@@ -33,23 +33,28 @@ from .views import (
     register_view,
     home_view,
     login_view,
-    logout_view,
+    logout_confirm,
+    perform_logout,
     teacher_dashboard,
     admin_dashboard,
+    student_dashboard,
     student_profile,
     student_courses,
-    Create,
+    StudentCreateView,
+    
 )
 
 urlpatterns = [
     path('', home_view, name='home'),
     path('login/', login_view, name='login'),
     path('register/', register_view, name='register'),
-    path('logout/', logout_view, name='logout'),
+    path('logout/', logout_confirm, name='confirm'),
+    path('logout/perform/', perform_logout, name='logout'),
 
     path('student/profile/', student_profile, name='student_profile'),
     path('student/courses/', student_courses, name='student_courses'),
-    path('student/dashboard/', Create.as_view(), name='student_dashboard'),
+    path('student/dashboard/', student_dashboard, name='student_dashboard'),
+    path('student/create/', StudentCreateView.as_view(), name='student_create'),
 
     path('teacher/dashboard/', teacher_dashboard, name='teacher_dashboard'),
     path('hero/dashboard/', admin_dashboard, name='admin_dashboard'),

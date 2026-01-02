@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logout Confirmation</title>
+</head>
+<body>
+    <h2>Are you sure you want to logout?</h2>
+
+    <!-- Confirm button -->
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit">Yes, Logout</button>
+    </form>
+
+    <!-- Cancel button -->
+    <a href="{% url 'student_dashboard' %}">Cancel</a>
+</body>
+</html>

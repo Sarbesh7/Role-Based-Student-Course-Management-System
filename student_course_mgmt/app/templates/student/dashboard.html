@@ -9,24 +9,30 @@
     <h1>Student Dashboard</h1>
       <div class="container">
         <h2>this is a student dashboard</h2>
-        <a href="{% url 'student_profile' %}">View Profile</a>
+        
         <a href="{% url 'student_courses' %}">My Courses</a>
+        
+        
     </div>
 
     {% if error %}
         <p style="color:red;">{{ error }}</p>
     {% endif %}
 
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="name" placeholder="Name" value="{{ student.name }}">
-        <input type="number" name="age" placeholder="Age" value="{{ student.age }}">
-        <input type="email" name="email" placeholder="Email" value="{{ student.email }}">
-        <input type="number" name="grade" placeholder="Grade" value="{{ student.grade }}">
-        <textarea name="address" placeholder="Address">{{ student.address }}</textarea>
-        <button type="submit">Save</button>
-    </form>
 
+    {% if not user.student %}
+    <a href="{% url 'student_create' %}">Create Profile</a>
+    {% else %}
     <a href="{% url 'student_profile' %}">View Profile</a>
+    {% endif %}
+
+    <!-- logout here -->
+    <a href="{% url 'confirm' %}">Logout</a>
+
+
+    
+    <!--  -->
+    
 </body>
+    
 </html>
