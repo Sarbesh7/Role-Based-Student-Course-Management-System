@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -6,8 +6,10 @@ from .forms import RegisterForm
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.cache import never_cache
 from django.views import View
-from .models import Student
+from .models import Student, Course
 from django.utils.decorators import method_decorator
+from django.http import HttpResponse
+ 
 
 
 # ------------------ HOME ------------------
@@ -104,9 +106,13 @@ def admin_dashboard(request):
 # ------------------ TEACHER DASHBOARD ------------------
 @login_required
 def teacher_dashboard(request):
+    students = Student.objects.all()
     if not request.user.groups.filter(name='Teacher').exists():
         raise PermissionDenied
-    return render(request, 'teacher/dashboard.html')
+    return render(request, 'teacher/dashboard.html', {'students': students})
+    
+    
+
 
 
 # ------------------ STUDENT DASHBOARD ------------------
@@ -163,3 +169,36 @@ class StudentCreateView(View):
         )
 
         return redirect('student_profile')
+    
+@login_required
+def update_student(request, id):
+    student = get_object_or_404(Student, id=id)
+
+    if request.method == "POST":
+        student.name = request.POST.get("name")
+        student.age = request.POST.get("age")
+        student.email = request.POST.get("email")
+
+        student.save()
+        return redirect("teacher_dashboard")  # adjust name if needed
+
+    # IMPORTANT: GET must return a response
+    return render(request, "teacher/update_student.html", {"student": student})
+
+
+@method_decorator(login_required, name='dispatch')
+class CourseCreateView(View):
+    def get(self,request):
+        return render(request,'teacher/course_students.html')
+    
+    def post(self,request):
+        grade=request.POST.get('grade')
+        course_name=request.POST.get('course_name')
+        description=request.POST.get('description')
+        
+        Course.objects.create(
+            grade=grade,
+            course_name=course_name,
+            description=description
+        )
+        return redirect('teacher_dashboard')  

@@ -11,5 +11,39 @@
        dashboard
        teacher
     </h2>
+    <h2>data of students</h2>
+    <button><a href="{% url 'Course' %}">Add Course</a></button>
+
+    <div class="container">
+        <table>
+            <tr>
+                <th>SN</th>
+                <th>Student Name</th>
+                <th>Student Email</th>
+                <th>Adress</th>
+                <th>Grade</th>
+                <th>Age</th>
+                <th>Update</th>
+
+            </tr>
+            {% for student in students %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.address }}</td>
+                <td>{{ student.grade }}</td>
+                <td>{{ student.age }}</td>
+                <td><button><a href="{% url 'update_student' student.id %}">Update</a></button></td>
+            </tr>
+            {% endfor %}
+
+
+        </table>
+ 
+
+
+    </div>
+
 </body>
 </html>

@@ -11,3 +11,11 @@ class Student(models.Model):
 
     def __str__(self):
         return self.name or self.user.username
+
+class Course(models.Model):
+    grade=models.IntegerField()
+    course_name=models.CharField(max_length=100)
+    description=models.TextField()
+    
+    def __str__(self):
+        return self.course_name

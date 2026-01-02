@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>courses</title>
+</head>
+<body>
+    <h2>Courses</h2>
+    enter the courses for each grades here
+    <div class="container">
+        <form method="post" >
+            {% csrf_token %}
+            <label for="grade">Grade:</label>
+            <input type="number" name="grade" placeholder="Enter Grade">
+            
+            <label for="course_name">Course:</label>
+            <input type="text" name="course_name" placeholder="Enter Course">
+            <label for="description">Description:</label>
+            <input type="text" name="description" placeholder="Enter Description">
+            <button type="submit">Add Course</button>
+        </form>
+
+
+    </div>
+
+
+
+    
+</body>
+</html>
