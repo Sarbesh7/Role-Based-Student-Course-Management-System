@@ -40,10 +40,42 @@
 
 
         </table>
- 
-
-
     </div>
+
+
+
+
+    
+<br><br><br>    <h2>data of courses</h2>
+
+
+      <div class="container">
+        <table>
+            <tr>
+                <th>SN</th>
+                <th>Grade</th>
+                <th>Course Name</th>
+                <th>Description</th>
+                
+
+            </tr>
+            {% for course in courses %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ course.grade }}</td>
+                <td>{{ course.course_name}}</td>
+                <td>{{ course.description }}</td>
+
+
+            </tr>
+            {% endfor %}
+
+
+        </table>
+    </div>
+<br>
+<br>
+<br>
 
 </body>
 </html>

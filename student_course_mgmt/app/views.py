@@ -94,7 +94,9 @@ def student_profile(request):
 # ------------------ STUDENT COURSES ------------------
 @login_required
 def student_courses(request):
-    return render(request, 'student/my_courses.html')
+    student = Student.objects.get(user=request.user)
+    courses = Course.objects.filter(grade=student.grade)
+    return render(request, 'student/my_courses.html', {'courses': courses})
 
 
 # ------------------ ADMIN DASHBOARD ------------------
@@ -109,7 +111,11 @@ def teacher_dashboard(request):
     students = Student.objects.all()
     if not request.user.groups.filter(name='Teacher').exists():
         raise PermissionDenied
-    return render(request, 'teacher/dashboard.html', {'students': students})
+    courses = Course.objects.all()
+    return render(request, 'teacher/dashboard.html', {
+        'students': students,
+        'courses': courses,
+    })
     
     
 
@@ -188,6 +194,7 @@ def update_student(request, id):
 
 @method_decorator(login_required, name='dispatch')
 class CourseCreateView(View):
+    
     def get(self,request):
         return render(request,'teacher/course_students.html')
     
@@ -197,8 +204,8 @@ class CourseCreateView(View):
         description=request.POST.get('description')
         
         Course.objects.create(
-            grade=grade,
+            grade=int(grade),
             course_name=course_name,
-            description=description
+            description=description,
         )
-        return redirect('teacher_dashboard')  
+        return redirect('teacher_dashboard')
