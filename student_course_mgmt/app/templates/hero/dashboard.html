@@ -8,7 +8,43 @@
 <body>
 
     <h1>Dashboard Page</h1>
-    admin
+    welcome to the dashboard of admin.
+
+
+    students data
+     <div class="container">
+        <table>
+            <tr>
+                <th>SN</th>
+                <th>Student Name</th>
+                <th>Student Email</th>
+                <th>Adress</th>
+                <th>Grade</th>
+                <th>Age</th>
+                <th>Update</th>
+
+            </tr>
+            {% for student in students %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.email }}</td>
+                <td>{{ student.address }}</td>
+                <td>{{ student.grade }}</td>
+                <td>{{ student.age }}</td>
+                <td><button><a href="{% url 'update_student' student.id %}">Update</a></button></td>
+                <td><a href="{% url 'delete_confirm' student.id %}">Delete</a></td>
+            </tr>
+            {% endfor %}
+
+
+        </table>
+    </div>
+
+
+
+
+    
     
     
 </body>

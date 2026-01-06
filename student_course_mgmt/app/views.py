@@ -102,8 +102,32 @@ def student_courses(request):
 # ------------------ ADMIN DASHBOARD ------------------
 @login_required
 def admin_dashboard(request):
-    return render(request, 'hero/dashboard.html')
+     students = Student.objects.all()
+     return render(request, 'hero/dashboard.html', {'students': students} )
 
+@login_required
+def delete_page(request, id):
+    # Only admins can reach the delete confirmation
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    student = get_object_or_404(Student, id=id)
+    return render(request, 'hero/delete_student.html', {'student': student})
+ 
+ 
+@login_required 
+def delete_student(request, id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    student = get_object_or_404(Student, id=id)
+
+    # Only allow deletion via POST; otherwise send to confirm page
+    if request.method != 'POST':
+        return redirect('delete_confirm', id=id)
+
+    student.delete()
+    return redirect('admin_dashboard')
+    
 
 # ------------------ TEACHER DASHBOARD ------------------
 @login_required
@@ -184,11 +208,17 @@ def update_student(request, id):
         student.name = request.POST.get("name")
         student.age = request.POST.get("age")
         student.email = request.POST.get("email")
+        student.grade = request.POST.get("grade")
+        student.address = request.POST.get("address")
 
         student.save()
-        return redirect("teacher_dashboard")  # adjust name if needed
+        if request.user.is_staff:
+            return redirect("admin_dashboard")  
+        return redirect("teacher_dashboard")  
 
-    # IMPORTANT: GET must return a response
+    
+    if request.user.is_staff:
+        return render(request, "hero/update_student.html", {"student": student})
     return render(request, "teacher/update_student.html", {"student": student})
 
 
