@@ -4,35 +4,65 @@
 <head>
     <meta charset="UTF-8">
     <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
 </head>
+
 <body>
-    <h1>Student Dashboard</h1>
-      <div class="container">
-        <h2>this is a student dashboard</h2>
-        
-        <a href="{% url 'student_courses' %}">My Courses</a>
-        
-        
+    {% include 'navbar.html' %}
+
+    <div class="container">
+        <h1>Student Dashboard</h1>
+        <p class="muted">Welcome to your dashboard. Access your profile, courses, and important updates here.</p>
+
+        <div class="actions">
+            <a class="btn btn-primary" href="{% url 'student_courses' %}">My Courses</a>
+
+            {% if not user.student %}
+                <a class="btn btn-outline" href="{% url 'student_create' %}">Create Profile</a>
+            {% else %}
+                <a class="btn btn-outline" href="{% url 'student_profile' %}">View Profile</a>
+            {% endif %}
+
+            <a class="btn btn-outline" href="{% url 'confirm' %}">Logout</a>
+        </div>
+
+        <!-- UPDATED PLACEHOLDER CONTENT -->
+        <div class="card" style="margin-top: 12px;">
+            <h2>Quick Overview</h2>
+            <p class="muted">Here is a quick look at your academic information and next steps.</p>
+
+            {% if user.student %}
+                <ul>
+                    <li><strong>Name:</strong> {{ user.student.name }}</li>
+                    <li><strong>Class:</strong> {{ user.student.grade }}</li>
+                    <li><strong>Email:</strong> {{ user.student.email }}</li>
+                    <li><strong>Address:</strong> {{ user.student.address }}</li>
+                </ul>
+            {% else %}
+                <p class="muted">You have not completed your student profile yet.</p>
+                <p>Click “Create Profile” to fill in your details and unlock personalized features.</p>
+            {% endif %}
+        </div>
+
+        <div class="card" style="margin-top: 12px;">
+            <h2>What's Next?</h2>
+            <p class="muted">A set of recommended actions to help you get started quickly.</p>
+            <ul>
+                <li>• Check your assigned courses based on your grade.</li>
+                <li>• Update your profile to keep your academic details accurate.</li>
+                <li>• Stay tuned for new announcements and updates from teachers.</li>
+                <li>• Explore upcoming courses and track your progress.</li>
+            </ul>
+        </div>
+
+        {% if error %}
+            <p class="muted" style="color: var(--warn);">{{ error }}</p>
+        {% endif %}
+
+        <script src="{% static 'js/student.js' %}"></script>
     </div>
 
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-
-
-    {% if not user.student %}
-    <a href="{% url 'student_create' %}">Create Profile</a>
-    {% else %}
-    <a href="{% url 'student_profile' %}">View Profile</a>
-    {% endif %}
-
-    <!-- logout here -->
-    <a href="{% url 'confirm' %}">Logout</a>
-
-
-    
-    <!--  -->
-    
 </body>
-    
 </html>

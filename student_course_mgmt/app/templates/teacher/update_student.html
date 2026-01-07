@@ -1,27 +1,58 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Update Student</title>
+    <link rel="stylesheet" href="{% static 'css/teacher.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
-    update your student info here
-    <form method="POST">
-        {% csrf_token %}
-        <label for="name">Name:</label>
-        <input type="text" name="name"  value="{{ student.name }}">
-        <label for="age">Age:</label>
-        <input type="number" name="age"  value="{{ student.age }}">
-        <label for="email">Email:</label>
-        <input type="email" name="email"  value="{{ student.email }}">
-        <label for="grade">Grade:</label>
-        <input type="number" name="grade"  value="{{ student.grade }}">
-        <label for="address">Address:</label>
-        <textarea name="address">{{ student.address }}</textarea>
-        
-        <button type="submit">Save</button>
-    </form>
+    {% include 'navbar-teacher.html' %}
 
+    <div class="container">
+        <div style="max-width: 520px; margin: 40px auto;">
+            <h1>Update Student Information</h1>
+            <p class="muted">Edit student details below.</p>
+
+            <form method="POST" class="card" style="display: grid; gap: 14px; margin-top: 16px;">
+                {% csrf_token %}
+
+                <div class="form-field">
+                    <label for="name">Name</label>
+                    <input id="name" type="text" name="name" value="{{ student.name }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="age">Age</label>
+                    <input id="age" type="number" name="age" value="{{ student.age }}" min="1" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" name="email" value="{{ student.email }}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="grade">Grade</label>
+                    <input id="grade" type="number" name="grade" value="{{ student.grade }}" min="1" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address" rows="4" required>{{ student.address }}</textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a class="btn btn-outline" href="{% url 'teacher_dashboard' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+    <script src="{% static 'js/teacher.js' %}"></script>
 </body>
 </html>

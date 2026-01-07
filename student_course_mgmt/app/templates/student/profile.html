@@ -4,21 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My profile</title>
+    <title>My Profile</title>
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
-    <h1>My Profile</h1>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h1>My Profile</h1>
+        
+        {% if student %}
+            <div class="card profile">
+                <div class="summary">
+                    <p><strong>Name:</strong> {{ student.name }}</p>
+                    <p><strong>Email:</strong> {{ student.email }}</p>
+                    <p><strong>Age:</strong> {{ student.age }}</p>
+                    <p><strong>Grade:</strong> {{ student.grade }}</p>
+                    <p><strong>Address:</strong> {{ student.address }}</p>
+                </div>
+            </div>
+        {% else %}
+            <div class="card">
+                <p class="muted">No profile data found. Please complete your dashboard form.</p>
+            </div>
+        {% endif %}
 
-    {% if student %}
-        <p>Name: {{ student.name }}</p>
-        <p>Email: {{ student.email }}</p>
-        <p>Age: {{ student.age }}</p>
-        <p>Grade: {{ student.grade }}</p>
-        <p>Address: {{ student.address }}</p>
-    {% else %}
-        <p>No profile data found. Please complete your dashboard form.</p>
-    {% endif %}
-
-    <a href="{% url 'student_dashboard' %}">Back to Dashboard</a>
+        <div class="actions">
+            <a class="btn btn-outline" href="{% url 'student_dashboard' %}">Back to Dashboard</a>
+        </div>
+        <script src="{% static 'js/student.js' %}"></script>
+    </div>
 </body>
 </html>

@@ -5,24 +5,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
     <div class="container">
-<h2>Login</h2>
-        <form action="{% url 'login' %}" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ next }}">
-            <input type="text" name="username" placeholder="Username" required>
-            
-            <input type="password" name="password" placeholder="Password" required>
+        <div style="max-width: 420px; margin: 40px auto;">
+            <h1>Login</h1>
+            <p class="muted">Enter your credentials to access your account.</p>
 
-            <button type="submit">Login</button>
-        </form>
+            <form method="POST" class="card" style="display: grid; gap: 14px; margin-top: 16px;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
 
+                {% if error %}
+                    <div style="padding: 12px; border-radius: var(--radius); background: #fee; border-left: 4px solid var(--warn); color: var(--warn);">
+                        {{ error }}
+                    </div>
+                {% endif %}
 
+                <div class="form-field">
+                    <label for="username">Username</label>
+                    <input id="username" type="text" name="username" placeholder="Enter your username" required>
+                </div>
 
+                <div class="form-field">
+                    <label for="password">Password</label>
+                    <input id="password" type="password" name="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <a class="btn btn-outline" href="{% url 'home' %}">Back</a>
+                </div>
+
+                <p style="text-align: center; color: var(--muted); margin: 12px 0;">
+                    Don't have an account? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 600;">Register</a>
+                </p>
+            </form>
+        </div>
     </div>
-    
+
+    {% include 'footer.html' %}
+    <script src="{% static 'js/student.js' %}"></script>
 </body>
 </html>

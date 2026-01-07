@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Student</title>
+    <title>Delete User</title>
     <link rel="stylesheet" href="{% static 'css/admin.css' %}">
     <meta name="color-scheme" content="light">
 </head>
@@ -14,12 +14,12 @@
     <div class="container">
         <div style="max-width: 420px; margin: 60px auto;">
             <div class="card">
-                <h2>Delete Student</h2>
-                <p class="muted">This action cannot be undone. Are you sure you want to delete <strong>{{ student.name }}</strong>?</p>
+                <h2>Delete User</h2>
+                <p class="muted">This action cannot be undone. Are you sure you want to delete the user <strong>{{ user.username }}</strong>?</p>
 
-                <form method="post" action="{% url 'delete' student.id %}" style="display: grid; gap: 12px; margin-top: 16px;">
+                <form method="post" action="{% url 'delete_user' user.id %}" style="display: grid; gap: 12px; margin-top: 16px;">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-danger" style="width: 100%;">Yes, Delete Student</button>
+                    <button type="submit" class="btn btn-danger" style="width: 100%;">Yes, Delete User</button>
                     <a class="btn btn-outline" style="text-align: center;" href="{% url 'admin_dashboard' %}">Cancel</a>
                 </form>
             </div>

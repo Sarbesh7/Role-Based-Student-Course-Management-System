@@ -1,20 +1,61 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Create Profile</title>
+    <meta name="color-scheme" content="light">
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+
 </head>
 <body>
-   <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="name" placeholder="Name" value="{{ student.name }}">
-        <input type="number" name="age" placeholder="Age" value="{{ student.age }}">
-        <input type="email" name="email" placeholder="Email" value="{{ student.email }}">
-        <input type="number" name="grade" placeholder="Grade" value="{{ student.grade }}">
-        <textarea name="address" placeholder="Address">{{ student.address }}</textarea>
-        <button type="submit">Save</button>
-    </form>
-    
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h1>Create Your Student Profile</h1>
+        <p class="muted">Fill in your information below to complete your profile.</p>
+
+        {% if error %}
+            <div class="card" style="margin: 12px 0; border-left: 4px solid var(--warn);">
+                <p style="color: var(--warn); margin: 0;">{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <form method="POST" class="card" style="margin-top: 12px; display: grid; gap: 14px;">
+            {% csrf_token %}
+
+            <div class="form-field">
+                <label for="name">Name</label>
+                <input id="name" type="text" name="name" placeholder="Enter your full name" value="{{ student.name }}" required>
+            </div>
+
+            <div class="form-field">
+                <label for="age">Age</label>
+                <input id="age" type="number" name="age" placeholder="e.g., 16" value="{{ student.age }}" min="1" step="1" required>
+            </div>
+
+            <div class="form-field">
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" placeholder="you@example.com" value="{{ student.email }}" required>
+            </div>
+
+            <div class="form-field">
+                <label for="grade">Grade</label>
+                <input id="grade" type="number" name="grade" placeholder="e.g., 10" value="{{ student.grade }}" min="1" step="1" required>
+            </div>
+
+            <div class="form-field">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" placeholder="Street, City, State" rows="4" required>{{ student.address }}</textarea>
+            </div>
+
+            <div class="actions" style="margin-top: 4px;">
+                <button type="submit" class="btn btn-primary">Save Profile</button>
+                <a class="btn btn-outline" href="{% url 'student_dashboard' %}">Cancel</a>
+            </div>
+        </form>
+
+        <script src="{% static 'js/student.js' %}"></script>
+    </div>
 </body>
 </html>

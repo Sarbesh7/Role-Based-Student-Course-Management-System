@@ -1,47 +1,63 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/teacher.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
-   <h2>Teacher
-
-       dashboard
-       teacher
-    </h2>
-    <h2>data of students</h2>
-    <button><a href="{% url 'Course' %}">Add Course</a></button>
+    {% include 'navbar-teacher.html' %}
 
     <div class="container">
-        <table>
-            <tr>
-                <th>SN</th>
-                <th>Student Name</th>
-                <th>Student Email</th>
-                <th>Adress</th>
-                <th>Grade</th>
-                <th>Age</th>
-                <th>Update</th>
+        <h1>Teacher Dashboard</h1>
+        <p class="muted">Manage students and course information.</p>
 
-            </tr>
-            {% for student in students %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ student.name }}</td>
-                <td>{{ student.email }}</td>
-                <td>{{ student.address }}</td>
-                <td>{{ student.grade }}</td>
-                <td>{{ student.age }}</td>
-              
-                <td><button><a href="{% url 'update_student' student.id %}">Update</a></button></td>
-                <td><button><a href="{% url 'delete_student' student.id %}">Delete</a></button></td>
+        <div class="actions" style="margin-top: 16px;">
+            <a class="btn btn-primary" href="{% url 'Course' %}">Add New Course</a>
+        </div>
 
-            
-            </tr>
-            {% endfor %}
-
-
-        </table>
+        <!-- Students Section -->
+        <div style="margin-top: 24px;">
+            <h2>Students Overview</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Grade</th>
+                            <th>Age</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ student.name }}</strong></td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.address }}</td>
+                            <td>{{ student.grade }}</td>
+                            <td>{{ student.age }}</td>
+                            <td style="text-align: center;">
+                                <a class="btn btn-outline" style="padding: 6px 8px; font-size: 0.9rem;" href="{% url 'update_student' student.id %}">Edit</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 20px;">No students found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
+
+    {% include 'footer.html' %}
+    <script src="{% static 'js/teacher.js' %}"></script>
+</body>
+</html>

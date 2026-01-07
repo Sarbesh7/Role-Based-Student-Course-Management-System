@@ -4,12 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DBM SOFTWARE</title>
+    <title>Welcome to Student Course Management</title>
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
-    <h1>Welcome to DBM SOFTWARE</h1>
-    <a href="{% url 'login' %}">Login</a> | 
-    <a href="{% url 'register' %}">Register</a>
-    
+    <div class="container">
+        <div style="text-align: center; padding: 40px 0;">
+            <h1>Welcome to Student Course Management</h1>
+            <p class="muted" style="font-size: 1.1rem; margin: 16px 0;">Manage your academic journey with ease</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin: 32px 0;">
+            <div class="card">
+                <h3>For Students</h3>
+                <p class="muted">Access your courses, view grades, and manage your profile.</p>
+                <div class="actions">
+                    <a class="btn btn-primary" href="{% url 'login' %}">Login</a>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>New Here?</h3>
+                <p class="muted">Create an account to get started with your courses.</p>
+                <div class="actions">
+                    <a class="btn btn-outline" href="{% url 'register' %}">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include 'footer.html' %}
+    <script src="{% static 'js/student.js' %}"></script>
 </body>
 </html>

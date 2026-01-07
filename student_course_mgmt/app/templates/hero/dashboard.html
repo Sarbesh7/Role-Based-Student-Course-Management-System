@@ -1,51 +1,89 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
+    {% include 'navbar-admin.html' %}
 
-    <h1>Dashboard Page</h1>
-    welcome to the dashboard of admin.
+    <div class="container">
+        <h1>Admin Dashboard</h1>
+        <p class="muted">Manage students, users, and system settings.</p>
 
+        <!-- Students Section -->
+        <div style="margin-top: 24px;">
+            <h2>Students Management</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>SN</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Address</th>
+                            <th>Grade</th>
+                            <th>Age</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><strong>{{ student.name }}</strong></td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.address }}</td>
+                            <td>{{ student.grade }}</td>
+                            <td>{{ student.age }}</td>
+                            <td style="text-align: center;">
+                                <a class="btn btn-outline" style="padding: 6px 8px; font-size: 0.9rem;" href="{% url 'update_student' student.id %}">Edit</a>
+                                <a class="btn btn-danger" style="padding: 6px 8px; font-size: 0.9rem;" href="{% url 'delete_confirm' student.id %}">Delete</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="7" style="text-align: center; color: var(--muted); padding: 20px;">No students found.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    students data
-     <div class="container">
-        <table>
-            <tr>
-                <th>SN</th>
-                <th>Student Name</th>
-                <th>Student Email</th>
-                <th>Adress</th>
-                <th>Grade</th>
-                <th>Age</th>
-                <th>Update</th>
-
-            </tr>
-            {% for student in students %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ student.name }}</td>
-                <td>{{ student.email }}</td>
-                <td>{{ student.address }}</td>
-                <td>{{ student.grade }}</td>
-                <td>{{ student.age }}</td>
-                <td><button><a href="{% url 'update_student' student.id %}">Update</a></button></td>
-                <td><a href="{% url 'delete_confirm' student.id %}">Delete</a></td>
-            </tr>
-            {% endfor %}
-
-
-        </table>
+        <!-- Users Section -->
+        <div style="margin-top: 32px;">
+            <h2>Users Management</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            {% if u.role != 'Admin' %}
+                                <td><strong>{{ u.username }}</strong></td>
+                                <td><span style="padding: 4px 8px; background: #f0f0f0; border-radius: 6px; font-size: 0.9rem;">{{ u.role }}</span></td>
+                                <td style="text-align: center;">
+                                    <a class="btn btn-danger" style="padding: 6px 8px; font-size: 0.9rem;" href="{% url 'delete_user_confirm' u.id %}">Delete</a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-
-
-
-    
-    
-    
+    {% include 'footer.html' %}
+    <script src="{% static 'js/student.js' %}"></script>
 </body>
 </html>

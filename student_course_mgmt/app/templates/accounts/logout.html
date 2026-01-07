@@ -1,18 +1,42 @@
 <!DOCTYPE html>
-<html>
+{% load static %}
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Logout Confirmation</title>
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
-    <h2>Are you sure you want to logout?</h2>
+    {% include 'navbar.html' %}
+    
+    <div class="container">
+        <div style="max-width: 420px; margin: 60px auto;">
+            <div class="card">
+                <h2>Logout Confirmation</h2>
+                <p class="muted">Are you sure you want to logout?</p>
 
-    <!-- Confirm button -->
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Yes, Logout</button>
-    </form>
+                <form method="post" action="{% url 'logout' %}" style="display: grid; gap: 12px; margin-top: 16px;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Logout</button>
+                    <a class="btn btn-outline" href="#" id="cancelBtn">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <!-- Cancel button -->
-    <a href="{% url 'student_dashboard' %}">Cancel</a>
+    {% include 'footer.html' %}
+    <script src="{% static 'js/student.js' %}"></script>
+    <script>
+        document.getElementById('cancelBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            const referrer = document.referrer;
+            if (referrer && referrer.includes(window.location.hostname)) {
+                window.location.href = referrer;
+            } else {
+                window.history.back();
+            }
+        });
+    </script>
 </body>
-</html>

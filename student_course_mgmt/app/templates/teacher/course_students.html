@@ -4,32 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>courses</title>
+    <title>Add Course</title>
+    <link rel="stylesheet" href="{% static 'css/teacher.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
-    <h2>Courses</h2>
-    enter the courses for each grades here
-    
+    {% include 'navbar-teacher.html' %}
+
     <div class="container">
-        <form method="post">
-            {% csrf_token %}
-            <label for="grade">Grade:</label>
-            <input type="number" name="grade" placeholder="Enter Grade">
+        <div style="max-width: 520px; margin: 40px auto;">
+            <h1>Add New Course</h1>
+            <p class="muted">Enter course details to assign grades. This will be available to students.</p>
 
-            <label for="course_name">Course:</label>
-            <input type="text" name="course_name" placeholder="Enter Course">
+            <form method="post" class="card" style="display: grid; gap: 14px; margin-top: 16px;">
+                {% csrf_token %}
 
-            <label for="description">Description:</label>
-            <input type="text" name="description" placeholder="Enter Description">
+                {% if error %}
+                    <div style="padding: 12px; border-radius: var(--radius); background: #fee; border-left: 4px solid var(--warn); color: var(--warn);">
+                        {{ error }}
+                    </div>
+                {% endif %}
 
-            <button type="submit">Add Course</button>
-        </form>
+                <div class="form-field">
+                    <label for="grade">Grade Level</label>
+                    <input id="grade" type="number" name="grade" placeholder="e.g., 10" min="1" required>
+                </div>
 
+                <div class="form-field">
+                    <label for="course_name">Course Name</label>
+                    <input id="course_name" type="text" name="course_name" placeholder="e.g., Mathematics, English" required>
+                </div>
 
+                <div class="form-field">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" placeholder="Brief course description..." rows="4" required></textarea>
+                </div>
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Add Course</button>
+                    <a class="btn btn-outline" href="{% url 'teacher_dashboard' %}">Cancel</a>
+                </div>
+            </form>
+        </div>
     </div>
 
-
-
-    
+    {% include 'footer.html' %}
+    <script src="{% static 'js/teacher.js' %}"></script>
 </body>
 </html>

@@ -1,22 +1,38 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>My Courses</title>
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+    <meta name="color-scheme" content="light">
+    
 </head>
 <body>
-    view your courses here
-    <ul>
-        {% for course in courses %}
-            <li>
-                <h3>{{ course.course_name }}</h3>
-                <p>Grade: {{ course.grade }}</p>
-                <p>Description: {{ course.description }}</p>
-            </li>
-        {% empty %}
-            <li>No courses available.</li>
-        {% endfor %}
-    </ul>
+    {% include 'navbar.html' %}
+    <div class="container">
+        <h1>My Courses</h1>
+        <p class="muted">Browse the courses you’re enrolled in.</p>
+
+        <ul class="course-list">
+            {% for course in courses %}
+                <li class="course-card">
+                    <h3>{{ course.course_name }}</h3>
+                    <p>Grade: {{ course.grade }}</p>
+                    <p>{{ course.description }}</p>
+                </li>
+            {% empty %}
+                <li class="course-card">
+                    <p class="muted">No courses available.</p>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <div class="actions">
+            <a class="btn btn-outline" href="{% url 'student_dashboard' %}">Back to Dashboard</a>
+        </div>
+        <script src="{% static 'js/student.js' %}"></script>
+    </div>
 </body>
 </html>

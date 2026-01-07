@@ -5,18 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
+    <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
+    <meta name="color-scheme" content="light">
 </head>
 <body>
     <div class="container">
-        <h2>Register</h2>
-        <form action="{% url 'register' %}" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Register</button>
-        </form>
+        <div style="max-width: 420px; margin: 40px auto;">
+            <h1>Create Account</h1>
+            <p class="muted">Register to access your student portal.</p>
+
+            <form method="post" class="card" style="display: grid; gap: 14px; margin-top: 16px;">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div style="padding: 12px; border-radius: var(--radius); background: #fee; border-left: 4px solid var(--warn); color: var(--warn);">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="form-field">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <p style="color: var(--warn); margin: 4px 0; font-size: 0.9rem;">
+                                {% for error in field.errors %}{{ error }}{% endfor %}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <div class="actions">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                    <a class="btn btn-outline" href="{% url 'home' %}">Back</a>
+                </div>
+
+                <p style="text-align: center; color: var(--muted); margin: 12px 0;">
+                    Already have an account? <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 600;">Login</a>
+                </p>
+            </form>
+        </div>
     </div>
-        
+
+    {% include 'footer.html' %}
+    <script src="{% static 'js/student.js' %}"></script>
 </body>
 </html>

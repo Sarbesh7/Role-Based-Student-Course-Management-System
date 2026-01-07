@@ -8,16 +8,12 @@ from django.views.decorators.cache import never_cache
 from django.views import View
 from .models import Student, Course
 from django.utils.decorators import method_decorator
-from django.http import HttpResponse
- 
-
-
-# ------------------ HOME ------------------
+# Home
 def home_view(request):
     return render(request, 'accounts/index.html')
 
 
-# ------------------ REGISTER ------------------
+# Register
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -26,10 +22,6 @@ def register_view(request):
                 username=form.cleaned_data['username'],
                 password=form.cleaned_data['password']
             )
-
-            # ❌ REMOVED: Auto-creating Student here was breaking logic
-            # Student.objects.create(user=user)
-
             login(request, user)
             return redirect('student_dashboard')
     else:
@@ -38,7 +30,7 @@ def register_view(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 
-# ------------------ LOGIN ------------------
+# Login
 @never_cache
 def login_view(request):
     error = None
@@ -63,9 +55,7 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'error': error})
 
 
-# ------------------ LOGOUT ------------------
-
-
+# Logout
 @login_required
 def logout_confirm(request):
     return render(request, 'accounts/logout.html')
@@ -75,46 +65,58 @@ def perform_logout(request):
     logout(request)  
     return redirect('login')  
 
-
-
-
-
-# ------------------ STUDENT PROFILE ------------------
+# Student profile
 @login_required
 def student_profile(request):
     try:
         student = Student.objects.get(user=request.user)
     except Student.DoesNotExist:
-        # ✅ CHANGED: force profile creation if not exists
         return redirect('student_create')
 
     return render(request, 'student/profile.html', {'student': student})
 
 
-# ------------------ STUDENT COURSES ------------------
+# Student courses
 @login_required
 def student_courses(request):
-    student = Student.objects.get(user=request.user)
+    student = Student.objects.filter(user=request.user).first()
+    if not student or student.grade is None:
+        return render(request, 'student/my_courses.html', {
+            'courses': [],
+            'info': 'Create your profile to see courses.'
+        })
     courses = Course.objects.filter(grade=student.grade)
     return render(request, 'student/my_courses.html', {'courses': courses})
 
 
-# ------------------ ADMIN DASHBOARD ------------------
+# Admin dashboard
 @login_required
 def admin_dashboard(request):
-     students = Student.objects.all()
-     return render(request, 'hero/dashboard.html', {'students': students} )
+    users = User.objects.all()
+    
+    user_data = []
+    for u in users:
+        if u.is_staff:
+            role = 'Admin'
+        elif u.groups.filter(name='Teacher').exists():
+            role = 'Teacher'
+        else:
+            role = 'Student'
+        user_data.append({
+            'id': u.id,
+            'username': u.username,
+            'role': role  })
+        
+    students = Student.objects.all()
+    return render(request, 'hero/dashboard.html', {'students': students, 'users': user_data})
 
 @login_required
 def delete_page(request, id):
-    # Only admins can reach the delete confirmation
     if not request.user.is_staff:
         raise PermissionDenied
 
     student = get_object_or_404(Student, id=id)
     return render(request, 'hero/delete_student.html', {'student': student})
- 
- 
 @login_required 
 def delete_student(request, id):
     if not request.user.is_staff:
@@ -129,7 +131,7 @@ def delete_student(request, id):
     return redirect('admin_dashboard')
     
 
-# ------------------ TEACHER DASHBOARD ------------------
+# Teacher dashboard
 @login_required
 def teacher_dashboard(request):
     students = Student.objects.all()
@@ -140,33 +142,41 @@ def teacher_dashboard(request):
         'students': students,
         'courses': courses,
     })
-    
-    
+
+# User deletion
+@login_required
+def delete_page_user(request, id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    user = get_object_or_404(User, id=id)
+    return render(request, 'hero/delete_user.html', {'user': user})
 
 
+@login_required
+def delete_user(request,id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    user = get_object_or_404(User, id=id)
+    user.delete()
+    return redirect('admin_dashboard')   
 
-# ------------------ STUDENT DASHBOARD ------------------
+# Student dashboard
 @login_required
 def student_dashboard(request):
     return render(request, 'student/dashboard.html')
 
 
-# =====================================================
-# =============== STUDENT CREATE VIEW =================
-# =====================================================
-
+# Student create
 @method_decorator(login_required, name='dispatch')
 class StudentCreateView(View):
 
     def get(self, request):
-        # ✅ CHANGED: Block access if profile already exists
         if Student.objects.filter(user=request.user).exists():
             return redirect('student_profile')
 
         return render(request, 'student/create.html')
 
     def post(self, request):
-        # ✅ CHANGED: Same protection for POST
         if Student.objects.filter(user=request.user).exists():
             return redirect('student_profile')
 
@@ -176,19 +186,17 @@ class StudentCreateView(View):
         grade = request.POST.get('grade')
         address = request.POST.get('address')
 
-        # ✅ Validation
         if not all([name, age, email, grade, address]):
             return render(request, 'student/create.html', {
                 'error': 'All fields are required'
             })
 
-        # ✅ Email uniqueness check
-        if Student.objects.filter(email=email).exists():
+        # Email uniqueness check
+        if Student.objects.filter(email__iexact=email).exists():
             return render(request, 'student/create.html', {
                 'error': 'Email already exists'
             })
 
-        # ✅ CHANGED: CREATE student ONLY here
         Student.objects.create(
             user=request.user,
             name=name,
@@ -205,16 +213,27 @@ def update_student(request, id):
     student = get_object_or_404(Student, id=id)
 
     if request.method == "POST":
-        student.name = request.POST.get("name")
-        student.age = request.POST.get("age")
-        student.email = request.POST.get("email")
-        student.grade = request.POST.get("grade")
-        student.address = request.POST.get("address")
+        name = request.POST.get("name")
+        age = request.POST.get("age")
+        email = request.POST.get("email")
+        grade = request.POST.get("grade")
+        address = request.POST.get("address")
+
+        # Prevent duplicate email across students
+        if email and Student.objects.filter(email__iexact=email).exclude(id=student.id).exists():
+            template = "hero/update_student.html" if request.user.is_staff else "teacher/update_student.html"
+            return render(request, template, {"student": student, "error": "Email already exists"})
+
+        student.name = name
+        student.age = age
+        student.email = email
+        student.grade = grade
+        student.address = address
 
         student.save()
         if request.user.is_staff:
-            return redirect("admin_dashboard")  
-        return redirect("teacher_dashboard")  
+            return redirect("admin_dashboard")
+        return redirect("teacher_dashboard")
 
     
     if request.user.is_staff:

@@ -18,6 +18,8 @@ from .views import (
     CourseCreateView,
     delete_student,
     delete_page,
+    delete_user,
+    delete_page_user,
     
 )
 
@@ -40,5 +42,8 @@ urlpatterns = [
     path('hero/dashboard/', admin_dashboard, name='admin_dashboard'),
     path('hero/delete/<int:id>/', delete_student, name='delete'),
     path('hero/delete/<int:id>/confirm/', delete_page, name='delete_confirm'),
+    path('hero/delete_user/<int:id>/', delete_user, name='delete_user'),
+    path('hero/delete_user/<int:id>/confirm/', delete_page_user, name='delete_user_confirm'),
+    
     
 ]
