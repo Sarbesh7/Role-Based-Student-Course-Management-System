@@ -4,45 +4,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Student Course Management</title>
     <link rel="stylesheet" href="{% static 'css/student-css/student.css' %}">
     <meta name="color-scheme" content="light">
+    <style>
+        .login-container {
+            max-width: 480px;
+            margin: 60px auto;
+            padding: 0 16px;
+        }
+        .login-card {
+            padding: 40px !important;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .login-header h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+        }
+        .login-header p {
+            margin: 0;
+            font-size: 1rem;
+        }
+        .form-wrapper {
+            display: grid;
+            gap: 20px;
+        }
+        .error-alert {
+            padding: 16px;
+            border-radius: var(--radius);
+            background: var(--warn-light);
+            border-left: 4px solid var(--warn);
+            color: var(--warn);
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .register-link {
+            text-align: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+        .register-link a {
+            font-weight: 600;
+            color: var(--primary);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <div style="max-width: 420px; margin: 40px auto;">
-            <h1>Login</h1>
-            <p class="muted">Enter your credentials to access your account.</p>
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p class="muted">Sign in to your account to continue</p>
+            </div>
 
-            <form method="POST" class="card" style="display: grid; gap: 14px; margin-top: 16px;">
+            <form method="POST" class="card login-card">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ next }}">
 
                 {% if error %}
-                    <div style="padding: 12px; border-radius: var(--radius); background: #fee; border-left: 4px solid var(--warn); color: var(--warn);">
-                        {{ error }}
+                    <div class="error-alert">
+                        <strong>Error:</strong> {{ error }}
                     </div>
                 {% endif %}
 
-                <div class="form-field">
-                    <label for="username">Username</label>
-                    <input id="username" type="text" name="username" placeholder="Enter your username" required>
+                <div class="form-wrapper">
+                    <div class="form-field">
+                        <label for="username">Username</label>
+                        <input id="username" type="text" name="username" placeholder="Enter your username" required autofocus>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="password">Password</label>
+                        <input id="password" type="password" name="password" placeholder="Enter your password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 8px;">
+                        Sign In
+                    </button>
                 </div>
 
-                <div class="form-field">
-                    <label for="password">Password</label>
-                    <input id="password" type="password" name="password" placeholder="Enter your password" required>
+                <div class="register-link">
+                    <span class="muted">Don't have an account? </span>
+                    <a href="{% url 'register' %}">Create one</a>
                 </div>
-
-                <div class="actions">
-                    <button type="submit" class="btn btn-primary">Login</button>
-                    <a class="btn btn-outline" href="{% url 'home' %}">Back</a>
-                </div>
-
-                <p style="text-align: center; color: var(--muted); margin: 12px 0;">
-                    Don't have an account? <a href="{% url 'register' %}" style="color: var(--primary); font-weight: 600;">Register</a>
-                </p>
             </form>
+
+            <p style="text-align: center; margin-top: 20px; color: var(--muted); font-size: 0.9rem;">
+                <a href="{% url 'home' %}" style="color: var(--primary);">Back to home</a>
+            </p>
         </div>
     </div>
 
